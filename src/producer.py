@@ -1,4 +1,5 @@
 import threading
+import queue
 import logging
 import sys
 import time
@@ -9,13 +10,26 @@ from src.source import Source
 class ProducerThread(threading.Thread):
     def __init__(
         self,
-        target,
-        name=None,
-        frame_count=100,
-        picture_shape=(768, 1024),
-        sigkill=None,
+        target: queue,
+        sigkill: queue,
+        name: str = "Producer",
+        frame_count: int = 100,
+        picture_shape: (int, int) = (768, 1024),
     ):
+        """A thread that is responsible for retriving data from Source
+        and pass them to queue that is shared with Consumer.
 
+        Args:
+            target (queue): queue share data are placed.
+            sigkill (queue, optional): queue that is shared between all the threads.
+            It keeps track wheather any of them is interrupted.
+            In such case, the rest should be stopped.
+            name (str, optional): Name of the thread. Defaults to Producer.
+            frame_count (int, optional): How many times data are taken from Source.
+            Defaults to 100.
+            picture_shape (tuple, optional): _description_. Defaults to (768, 1024).
+
+        """
         super(ProducerThread, self).__init__()
         self.target = target
         self.name = name
