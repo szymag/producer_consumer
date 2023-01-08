@@ -1,4 +1,5 @@
 import threading
+import queue
 import logging
 import cv2
 
@@ -6,13 +7,27 @@ import cv2
 class ConsumerThread(threading.Thread):
     def __init__(
         self,
-        target=None,
-        name=None,
-        resize_ratio=2,
-        kernel=5,
-        frame_count=100,
-        sigkill=None,
+        target: (queue, queue),
+        sigkill: queue,
+        name: str = "Consumer",
+        resize_ratio: float = 2,
+        kernel: int = 5,
+        frame_count: int = 100,
     ):
+        """Thread that recieve data from Producer via queue A, process and the send to queue B.
+        Median filter and reduction of size is applied.
+
+        Args:
+            target (queue, queue): queue share data between threads.
+            Here, two queue are provided because data are moved from Producer to SavePicture.
+            sigkill (queue, optional): queue that is shared between all the threads.
+            It keeps track wheather any of them is interrupted.
+            In such case, the rest should be stopped.
+            name (str, optional): Name of the thread. Defaults to "Consumer".
+            resize_ratio (float, optional): Determine how many times picture should be resized. Defaults to 2.
+            kernel (int, optional): Define kernel of median filter. Defaults to 5.
+            frame_count (int, optional): How many times data are taken from Source. Defaults to 100.
+        """
         super(ConsumerThread, self).__init__()
         self.target, self.target_B = target
         self.name = name

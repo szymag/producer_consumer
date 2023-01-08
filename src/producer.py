@@ -20,7 +20,7 @@ class ProducerThread(threading.Thread):
         and pass them to queue that is shared with Consumer.
 
         Args:
-            target (queue): queue share data are placed.
+            target (queue): queue share data between threads.
             sigkill (queue, optional): queue that is shared between all the threads.
             It keeps track wheather any of them is interrupted.
             In such case, the rest should be stopped.
