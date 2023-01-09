@@ -15,7 +15,7 @@ class SavePictureThread(threading.Thread):
         path: str = "./processed/",
         frame_count: int = 100,
     ):
-        """Thread responsible for saving data in png format. 
+        """Thread responsible for saving data in png format.
         It recieve data from Consumer.
 
         Args:
@@ -24,10 +24,10 @@ class SavePictureThread(threading.Thread):
             It keeps track whether any of them is interrupted.
             In such case, the rest should be stopped.
             name (str, optional):  Name of the thread. Defaults to "SavePicture".
-            path (str, optional): Place, where files are saved. 
+            path (str, optional): Place, where files are saved.
             Defaults to "./processed/".
             frame_count (int, optional): How many times data are taken from Source.
-            Defaults to 100. 
+            Defaults to 100.
         """
         super(SavePictureThread, self).__init__()
         self.target_B = target
@@ -57,5 +57,5 @@ class SavePictureThread(threading.Thread):
         return
 
     def save_png(self, arr, idx):
-        # print(f"{self.path}/{idx}.png")
+        logging.debug(f"{self.path}{idx}.png saved")
         cv2.imwrite(f"{self.path}{idx}.png", arr)

@@ -43,6 +43,8 @@ class ConsumerThread(threading.Thread):
             if not self.target.empty():
                 try:
                     item = self.target.get()
+                    item = self.reduce_size(item)
+                    item = self.apply_filter(item)
                     self.target_B.put(item)
                     logging.debug(str(self.target.qsize()) + " items in queue a")
                     logging.debug(str(self.target_B.qsize()) + " items in queue b")
@@ -58,7 +60,11 @@ class ConsumerThread(threading.Thread):
         return
 
     def apply_filter(self, picture):
-        pass
+        return cv2.medianBlur(picture, ksize=self.kernel)
 
     def reduce_size(self, picture):
-        pass
+        width = int(picture.shape[1] / self.resize_ratio)
+        height = int(picture.shape[0] / self.resize_ratio)
+        new_dim = (width, height)
+        return cv2.resize(picture, new_dim)
+        # return picture

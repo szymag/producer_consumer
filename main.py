@@ -23,16 +23,17 @@ if __name__ == "__main__":
 
     p = ProducerThread(
         target=queue_a,
-        name="producer",
         frame_count=frame_count,
         sigkill=queue_errors,
     )
     p.start()
+
     c = ConsumerThread(
         target=(queue_a, queue_b),
         name="consumer",
         frame_count=frame_count,
         sigkill=queue_errors,
+        kernel=1,
     )
     c.start()
     c1 = SavePictureThread(
@@ -43,7 +44,6 @@ if __name__ == "__main__":
         sigkill=queue_errors,
     )
     c1.start()
-
     p.join()
     c.join()
     c1.join()
