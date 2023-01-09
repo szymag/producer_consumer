@@ -15,6 +15,7 @@ class ProducerThread(threading.Thread):
         name: str = "Producer",
         frame_count: int = 100,
         picture_shape: (int, int) = (768, 1024),
+        delay_frame: float = 0.05
     ):
         """A thread that is responsible for retriving data from Source
         and pass them to queue that is shared with Consumer.
@@ -47,7 +48,7 @@ class ProducerThread(threading.Thread):
             and isinstance(self.picture_shape[1], int)
         ), "Dimensions of picture must be natural numer bigger than 0"
         self.source = Source((*picture_shape, 3))
-        self.delay_frame = 0.05
+        self.delay_frame = delay_frame
         return
 
     def run(self):

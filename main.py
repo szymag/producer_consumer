@@ -15,7 +15,8 @@ logging.basicConfig(
 if __name__ == "__main__":
     queue_errors = queue.Queue() # helper variable, allow for basic communication between threads
     path = "./processed/"
-    frame_count = 10
+    frame_count = 100
+    delay_frame = 0.05
     queue_a = queue.Queue(maxsize=102) # Maxsize is set to avoid memory errors in case of large dataset. 
     queue_b = queue.Queue(maxsize=102)
     
