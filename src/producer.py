@@ -22,7 +22,7 @@ class ProducerThread(threading.Thread):
         Args:
             target (queue): queue share data between threads.
             sigkill (queue, optional): queue that is shared between all the threads.
-            It keeps track wheather any of them is interrupted.
+            It keeps track whether any of them is interrupted.
             In such case, the rest should be stopped.
             name (str, optional): Name of the thread. Defaults to Producer.
             frame_count (int, optional): How many times data are taken from Source.

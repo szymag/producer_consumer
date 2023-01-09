@@ -15,6 +15,20 @@ class SavePictureThread(threading.Thread):
         path: str = "./processed/",
         frame_count: int = 100,
     ):
+        """Thread responsible for saving data in png format. 
+        It recieve data from Consumer.
+
+        Args:
+            target (queue): queue B share data between threads.
+            sigkill (queue):  queue that is shared between all the threads.
+            It keeps track whether any of them is interrupted.
+            In such case, the rest should be stopped.
+            name (str, optional):  Name of the thread. Defaults to "SavePicture".
+            path (str, optional): Place, where files are saved. 
+            Defaults to "./processed/".
+            frame_count (int, optional): How many times data are taken from Source.
+            Defaults to 100. 
+        """
         super(SavePictureThread, self).__init__()
         self.target_B = target
         self.sigkill = sigkill
