@@ -17,6 +17,8 @@ if __name__ == "__main__":
     path = "./processed/"
     frame_count = 100
     delay_frame = 0.05
+    resize = 2
+    kernel_filter = 5
     queue_a = queue.Queue(maxsize=102) # Maxsize is set to avoid memory errors in case of large dataset. 
     queue_b = queue.Queue(maxsize=102)
     
@@ -25,6 +27,7 @@ if __name__ == "__main__":
         target=queue_a,
         frame_count=frame_count,
         sigkill=queue_errors,
+        delay_frame=delay_frame
     )
     p.start()
     # set and start thread that take data from queue A, process and put to queue B.
@@ -32,7 +35,8 @@ if __name__ == "__main__":
         target=(queue_a, queue_b),
         frame_count=frame_count,
         sigkill=queue_errors,
-        kernel=1,
+        kernel=kernel_filter,
+        resize_ratio=resize
     )
     c.start()
     # set and start thread that take data from queue B and save to *.png file.
