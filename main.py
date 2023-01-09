@@ -19,7 +19,7 @@ if __name__ == "__main__":
     path = "./processed/"
     queue_a = queue.Queue(maxsize=102)
     queue_b = queue.Queue(maxsize=102)
-    frame_count = 10
+    frame_count = 100
 
     p = ProducerThread(
         target=queue_a,
@@ -30,7 +30,6 @@ if __name__ == "__main__":
 
     c = ConsumerThread(
         target=(queue_a, queue_b),
-        name="consumer",
         frame_count=frame_count,
         sigkill=queue_errors,
         kernel=1,
@@ -38,7 +37,6 @@ if __name__ == "__main__":
     c.start()
     c1 = SavePictureThread(
         target=queue_b,
-        name="savepicture",
         frame_count=frame_count,
         path=path,
         sigkill=queue_errors,

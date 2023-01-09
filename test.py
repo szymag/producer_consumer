@@ -17,7 +17,7 @@ class TestProducerThread(unittest.TestCase):
 
     def test_production_1(self):
         producer = ProducerThread(
-            target=self.q_a, name="Producer", frame_count=10, sigkill=self.queue_errors
+            target=self.q_a, frame_count=10, sigkill=self.queue_errors
         )
         producer.start()
         producer.join()
@@ -30,7 +30,6 @@ class TestProducerThread(unittest.TestCase):
     def test_production_2(self):
         producer = ProducerThread(
             target=self.q_a,
-            name="Producer",
             picture_shape=(100, 50),
             sigkill=self.queue_errors,
         )
@@ -90,7 +89,6 @@ class TestConsumerThread(unittest.TestCase):
     def test_consumption_2(self):
         producer = ProducerThread(
             target=self.q_a,
-            name="Producer",
             frame_count=15,
             picture_shape=(100, 50),
             sigkill=self.queue_errors,
@@ -99,7 +97,6 @@ class TestConsumerThread(unittest.TestCase):
 
         consumer = ConsumerThread(
             target=(self.q_a, self.q_b),
-            name="consumer",
             frame_count=15,
             sigkill=self.queue_errors,
         )
@@ -112,6 +109,40 @@ class TestConsumerThread(unittest.TestCase):
         for i in range(15):
             self.assertEqual(self.q_b.get().shape, (50, 25, 3))
 
+
+    def test_consumption_2(self):
+        producer = ProducerThread(
+            target=self.q_a,
+            frame_count=5,
+            sigkill=self.queue_errors,
+        )
+        producer.start()
+
+        consumer = ConsumerThread(
+            target=(self.q_a, self.q_b),
+            frame_count=5,
+            sigkill=self.queue_errors,
+            resize_ratio=1.5
+        )
+        consumer.start()
+        producer.join()
+        consumer.join()
+
+        self.assertEqual(self.q_b.qsize(), producer.frame_count)
+        self.assertEqual(self.q_a.qsize(), 0)
+        for i in range(5):
+            self.assertEqual(self.q_b.get().shape, (int(768/1.5), int(1024/1.5), 3))
+
+    def test_apply_filter(self):
+        """ Test if filter method return picture with correct dimensions.
+        """
+        consumer = ConsumerThread(
+            target=(self.q_a, self.q_b),
+            sigkill=self.queue_errors,
+        )
+        picture_1 = cv2.imread('./test_pictures/test_0.png')
+        picture_2 = consumer.apply_filter(picture_1)
+        self.assertEqual(picture_1.shape, picture_2.shape)
 
 class TestResize(unittest.TestCase):
     """Test resize. Resize shouldn't affect the picture, so here 
@@ -166,7 +197,7 @@ class TestSavePictureThread(unittest.TestCase):
         self.q_a = queue.Queue()
         self.q_b = queue.Queue()
         self.queue_errors = queue.Queue()
-        self.fr_count = 15
+        self.fr_count = 55
 
     def tearDown(self):
         shutil.rmtree("./test_processed")
@@ -201,7 +232,7 @@ class TestSavePictureThread(unittest.TestCase):
         consumer.join()
         save_pic.join()
 
-        self.assertEqual(len(os.listdir("./test_processed/")), 15)
+        self.assertEqual(len(os.listdir("./test_processed/")), 55)
 
 
 if __name__ == "__main__":
