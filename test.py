@@ -235,8 +235,5 @@ class TestSavePictureThread(unittest.TestCase):
         self.assertEqual(len(os.listdir("./test_processed/")), 55)
 
 
-    def test_check_false(self):
-        self.assertTrue(False)
-
 if __name__ == "__main__":
     unittest.main()
