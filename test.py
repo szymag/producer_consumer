@@ -59,6 +59,30 @@ class TestProducerThread(unittest.TestCase):
                 sigkill=self.queue_errors,
             )
 
+    def test_production_4(self):
+        with self.assertRaises(AssertionError):
+            ProducerThread(
+                target=self.q_a,
+                sigkill=()
+            )
+        with self.assertRaises(AssertionError):
+            ProducerThread(
+                target=[],
+                sigkill=self.queue_errors
+            )
+
+        with self.assertRaises(AssertionError):
+            ProducerThread(
+                target=self.q_a,
+                sigkill=()
+            )
+        with self.assertRaises(AssertionError):
+            ProducerThread(
+                target=self.q_a,
+                sigkill=self.queue_errors,
+                frame_count=14.3
+            )
+
 
 class TestConsumerThread(unittest.TestCase):
     def setUp(self):
@@ -110,7 +134,7 @@ class TestConsumerThread(unittest.TestCase):
             self.assertEqual(self.q_b.get().shape, (50, 25, 3))
 
 
-    def test_consumption_2(self):
+    def test_consumption_3(self):
         producer = ProducerThread(
             target=self.q_a,
             frame_count=5,
@@ -132,6 +156,23 @@ class TestConsumerThread(unittest.TestCase):
         self.assertEqual(self.q_a.qsize(), 0)
         for i in range(5):
             self.assertEqual(self.q_b.get().shape, (int(768/1.5), int(1024/1.5), 3))
+
+    def test_consumption_4(self):
+        with self.assertRaises(AssertionError):
+            producer = ProducerThread(
+                target=self.q_a,
+                sigkill=self.queue_errors,
+            )
+            producer.start()
+            consumer = ConsumerThread(
+                target=(self.q_a, tuple()),
+                sigkill=self.queue_errors,
+            )
+            consumer.start()
+
+            producer.join()
+            consumer.join()
+
 
     def test_apply_filter(self):
         """ Test if filter method return picture with correct dimensions.
@@ -205,7 +246,6 @@ class TestSavePictureThread(unittest.TestCase):
     def test_seve_picture_1(self):
         producer = ProducerThread(
             target=self.q_a,
-            name="Producer",
             frame_count=self.fr_count,
             picture_shape=(100, 50),
             sigkill=self.queue_errors,
@@ -213,7 +253,6 @@ class TestSavePictureThread(unittest.TestCase):
         producer.start()
         consumer = ConsumerThread(
             target=(self.q_a, self.q_b),
-            name="Consumer",
             frame_count=self.fr_count,
             sigkill=self.queue_errors,
         )
@@ -221,7 +260,6 @@ class TestSavePictureThread(unittest.TestCase):
 
         save_pic = SavePictureThread(
             target=self.q_b,
-            name="Save picture",
             path="./test_processed/",
             frame_count=self.fr_count,
             sigkill=self.queue_errors,
@@ -231,9 +269,65 @@ class TestSavePictureThread(unittest.TestCase):
         producer.join()
         consumer.join()
         save_pic.join()
-
         self.assertEqual(len(os.listdir("./test_processed/")), 55)
 
+
+class TestConstructAllThread(unittest.TestCase):
+    def setUp(self):
+        self.q_a = queue.Queue()
+        self.q_b = queue.Queue()
+        self.queue_errors = queue.Queue()
+
+
+    def test_construct_1(self):
+        with self.assertRaises(AssertionError):
+            producer = ProducerThread(
+                target=self.q_a,
+                picture_shape=(100, 50),
+                sigkill=self.queue_errors,
+            )
+            producer.start()
+            consumer = ConsumerThread(
+                target=(self.q_a, self.q_b),
+                sigkill=self.queue_errors,
+            )
+            consumer.start()
+
+            save_pic = SavePictureThread(
+                target=list(),
+                path="./test_processed/",
+                sigkill=self.queue_errors,
+            )
+            save_pic.start()
+
+            producer.join()
+            consumer.join()
+            save_pic.join()
+
+    def test_construct_2(self):
+        with self.assertRaises(AssertionError):
+            producer = ProducerThread(
+                target=self.q_a,
+                sigkill=self.queue_errors,
+            )
+            producer.start()
+            consumer = ConsumerThread(
+                target=(self.q_a, self.q_b),
+                sigkill=self.queue_errors,
+            )
+            consumer.start()
+
+            save_pic = SavePictureThread(
+                target=self.q_a,
+                path="./test_processed/",
+                frame_count=13.2,
+                sigkill=self.queue_errors,
+            )
+            save_pic.start()
+
+            producer.join()
+            consumer.join()
+            save_pic.join()
 
 if __name__ == "__main__":
     unittest.main()
