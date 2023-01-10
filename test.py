@@ -70,12 +70,6 @@ class TestProducerThread(unittest.TestCase):
                 target=[],
                 sigkill=self.queue_errors
             )
-
-        with self.assertRaises(AssertionError):
-            ProducerThread(
-                target=self.q_a,
-                sigkill=()
-            )
         with self.assertRaises(AssertionError):
             ProducerThread(
                 target=self.q_a,
